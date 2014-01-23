@@ -17,12 +17,12 @@
 using namespace std;
 
 AbstractEngine* engine = NULL;
-
+int my_pid;
 bool readConfig();
 void termHandler( int sig );
 
 int main(int argc, char *argv[]) {
-  
+  my_pid=getpid();
   GreasyLog* log = GreasyLog::getInstance();
   GreasyConfig* config = GreasyConfig::getInstance();
     
@@ -50,7 +50,9 @@ int main(int argc, char *argv[]) {
   
   // Handle interrupting signals appropiately.
   signal(SIGTERM, termHandler);
-  signal(SIGINT, termHandler);
+  signal(SIGINT,  termHandler);
+  signal(SIGUSR1, termHandler);
+  signal(SIGUSR2, termHandler);
  
   // Create the proper engine selected and run it!
   engine = AbstractEngineFactory::getAbstractEngineInstance(filename,config->getValue("Engine"));
@@ -86,13 +88,15 @@ bool readConfig () {
 }
 
 void termHandler( int sig ) {
+  char killTree[100];
   
   GreasyLog* log = GreasyLog::getInstance();
   log->record(GreasyLog::error, "Caught TERM signal");
   if (engine) engine->writeRestartFile();
   log->record(GreasyLog::error, "Greasy was interrupted. Check restart & log files");
   log->logClose();
+  sprintf(killTree, "kill  -- -%d", my_pid);
+  system(killTree);
   exit(1);
-  
 }
   
