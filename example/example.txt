@@ -1,0 +1,34 @@
+/bin/sleep 1
+/usr/bin/hostname
+/bin/sleep 3
+/bin/sleep 4
+/bin/sleep 5
+/bin/sleep 6
+
+###########################################
+# These Lines with dependencies are correct 
+###########################################
+[# 5 #] 	/bin/sleep 11
+[# -1#]		/bin/sleep 12
+[#1-3#]		/bin/sleep 13
+[#1, 3 - 5 #]	/bin/sleep 14
+[##] 		/usr/bin/hostname
+
+
+#########################
+# these ones are not Ok
+#########################
+# sharps missing
+[ 1 ]		/bin/sleep 22
+[#1 ] 		/bin/sleep 23
+[ 1 #]		/bin/sleep 24 
+# Forward dependencies are not allowed
+[# +1 #] 	/bin/sleep 26
+[# 1000 #]	/bin/sleep 27
+# Dependencies must point to a task
+[# -1 #]	/bin/sleep 29
+# Dependencies must be numerical, and ranges must be expressed correctly
+[# 2->6 #] 	/bin/sleep 31
+[# mistake #]	/bin/sleep 32
+
+

@@ -1,0 +1,61 @@
+
+#########################################
+#					#
+# General Configuration for GREASY	#
+#					#
+#########################################
+
+# Greasy engine to use.
+# Possible values: "basic", "mpi" or "thread"
+Engine=@greasy_engine@
+
+
+# Remote spawn method for Basic Engine only
+# if not set, only local executions will be performed
+# Valid values are:
+# srun, ssh, none
+BasicRemoteMethod=@remotemethod@
+
+# Strict check of task file syntax and semantics
+# If any error is detected, the program will not continue
+# Values are: yes / no
+StrictCheck=yes
+
+# Maximum number of retries for a failed task.
+# If not set, no retries will be done for a failed task.
+#MaxRetries=1
+
+#
+# Log Parameters
+#
+
+# Path to the log file to record all actions.
+# If not set, stderr will be used
+
+LogFile=greasy.log
+
+# Loglevel to use. 
+# The higher the number is, the more verbose the output will be.
+# Each level includes the previous ones. Levels 2 or 3 are recommended.
+# These are the options:
+#
+#  - 0 : Silent. No log information will be generated.
+#
+#  - 1 : Error. Only fatal errors will be recorded.
+#
+#  - 2 : Warning. All errors & warnings will be recorded.
+#
+#  - 3 : Info. Standard information will be printed.
+#
+#  - 4 : Debug. Show debug information. Warning: Logs will grow very fast!
+#
+#  - 5 : Devel. Show development debug info. Warning: Logs will grow VERY VERY fast!
+#
+
+LogLevel=3
+
+#########################
+#			#
+# End of Configuration	#
+#			#
+#########################

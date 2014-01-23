@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# Some setup parameters
+COMMAND=`echo $_ | rev | cut -d"/" -f1 | rev`
+GREASY_BINDIR=@greasy_bindir@
+GREASY_CONFDIR=@greasy_etcdir@
+EXE=$GREASY_BINDIR/greasybin
+
+# Check if the script is launched using any kind of spawner
+if [ "$COMMAND" != "greasy" ]; then
+  echo "Usage: greasy <taskfile.txt>"
+  echo "Please rerun greasy without putting $COMMAND before"
+  exit
+fi
+
+# Decide which type of launcher to use depending on the engine selected.
+if [ -z "$GREASY_ENGINE" ]; then
+  GREASY_ENGINE=`cat $GREASY_CONFDIR/greasy.conf | grep "^[[:blank:]]*Engine=.*$"| tail -n1 | cut -d= -f 2 | cut -d" " -f1`
+fi
+
+if [[ "$GREASY_ENGINE" = "mpi" || "$GREASY_ENGINE" = "MPI" ]]; then
+  MPIRUN=@machine_mpirun@
+	#this avoid 100% cpu usage for the master
+	export I_MPI_WAIT_MODE=1
+	export I_MPI_PIN="disable"
+	export OMPI_MCA_mpi_yield_when_idle=1
+else
+  MPIRUN=""
+fi
+
+# If running inside a slurm job, append the jobid to the log.
+if [ -z "$GREASY_LOGFILE" ]; then
+ if [ -n "$LSB_BATCH_JID" ];
+	then
+		export GREASY_LOGFILE=greasy-$LSB_BATCH_JID.log
+	else 
+		if [ -n "$SLURM_JOBID" ]; then
+			export GREASY_LOGFILE=greasy-$SLURM_JOBID.log
+		fi
+	fi
+fi
+
+if [[ -n "$MPIRUN" && -n "$LSB_BATCH_JID" ]]; then
+  if [[ -n "$GREASY_NWORKERS" && -n "$GREASY_TASKS_PER_NODE" && $GREASY_TASKS_PER_NODE -ne 16 ]]; then
+    GREASY_NNODES=$((($GREASY_NWORKERS + $GREASY_TASKS_PER_NODE -1) / $GREASY_TASKS_PER_NODE))
+    let NODES=0
+    let TXNODE=0
+    let ID=0
+    while [ $NODES -lt $GREASY_NNODES ]; do
+      GEO=${GEO}"("
+      let TXNODE=0
+      while [ $TXNODE -lt $GREASY_TASKS_PER_NODE ]; do
+        if [[ $TXNODE -eq 0 && $NODES -eq 0 ]]; then
+          GEO=${GEO}$ID","
+          let ID=$ID+1
+        fi
+        if [ $TXNODE -ne 0 ]; then
+          GEO=${GEO}","
+        fi
+        GEO=${GEO}$ID
+        let TXNODE=$TXNODE+1
+        let ID=$ID+1
+      done
+      GEO=${GEO}")"
+      let NODES=$NODES+1
+    done
+    #export LSB_PJL_TASK_GEOMETRY="{"${GEO}"}"
+    echo "GREASY NWORKERS AND GREASY TASKS PER NODE DETECTED:"
+    echo "TOTAL_NODES=$GREASY_NNODES"
+    echo "GREASY_NWORKERS=$GREASY_NWORKERS"
+    echo "GREASY_TASKS_PER_NODE=$GREASY_TASKS_PER_NODE"
+    #export LSF_PJL_TYPE=intelmpi
+    n=0;
+    node="";
+		if [ -f $TMPDIR/hostfile.txt ]; then
+			rm $TMPDIR/hostfile.txt
+		fi
+    for i in `cat $LSB_DJOB_HOSTFILE`;do
+      if [ "$i" == "$node" ];then
+        continue
+      fi
+      node=$i;
+      if [ $n -eq 0 ];then
+        for j in `seq 1 $(($GREASY_TASKS_PER_NODE+1))`;do
+          echo $node >> $TMPDIR/hostfile.txt
+        done
+      else
+        for j in `seq 1 $GREASY_TASKS_PER_NODE`;do
+          echo $node >> $TMPDIR/hostfile.txt
+        done
+      fi
+      let n=$n+1
+    done
+    MPIRUN="$MPIRUN -machine $TMPDIR/hostfile.txt -np $(($GREASY_NWORKERS + 1))"
+    #export GREASY_NODELIST=`$MPIRUN hostname | tr "\n" ","`
+    export GREASY_NODELIST=`cat $TMPDIR/hostfile.txt | tr "\n" ","`
+  else
+	  echo "NOTE: List provided by resource manager"
+	export GREASY_NWORKERS=$(($LSB_DJOB_NUMPROC+1))
+	MPIRUN="$MPIRUN -n $GREASY_NWORKERS";
+        #export GREASY_NODELIST=`$MPIRUN hostname | tr "\n" ","`
+   fi
+else
+	if [[ -n "$MPIRUN" && -n "$SLURM_NPROCS" ]]; then
+		export GREASY_NWORKERS=$(($SLURM_NPROCS+1))
+	#	export GREASY_NODELIST=`srun hostname | tr "\n" ","`
+		MPIRUN="$MPIRUN -n $GREASY_NWORKERS -O"
+	fi
+fi
+
+
+# Run Greasy
+echo $MPIRUN $EXE $@
+$MPIRUN $EXE $@
+ 

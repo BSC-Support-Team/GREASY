@@ -1,0 +1,26 @@
+#!/usr/bin/perl
+use Term::ANSIColor;
+use strict;
+my $line;
+
+while ($line=<STDIN>) {
+
+  if ($line=~/ERROR\:/) {
+    print color 'bold red';
+  } elsif ($line=~/WARNING\:/) {
+    print color 'bold yellow';
+  } elsif ($line=~/INFO\:/) {
+    print color 'bold green';
+  } elsif ($line=~/DEBUG\:/) {
+    print color 'bold blue';
+  } elsif ($line=~/DEVEL\:/) {
+    print color 'bold cyan';
+  } else{
+    print color 'reset';
+  }
+
+  print $line;
+
+}
+
+print color 'reset';
