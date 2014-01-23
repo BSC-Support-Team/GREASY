@@ -43,33 +43,10 @@ fi
 if [[ -n "$MPIRUN" && -n "$LSB_BATCH_JID" ]]; then
   if [[ -n "$GREASY_NWORKERS" && -n "$GREASY_TASKS_PER_NODE" && $GREASY_TASKS_PER_NODE -ne 16 ]]; then
     GREASY_NNODES=$((($GREASY_NWORKERS + $GREASY_TASKS_PER_NODE -1) / $GREASY_TASKS_PER_NODE))
-    let NODES=0
-    let TXNODE=0
-    let ID=0
-    while [ $NODES -lt $GREASY_NNODES ]; do
-      GEO=${GEO}"("
-      let TXNODE=0
-      while [ $TXNODE -lt $GREASY_TASKS_PER_NODE ]; do
-        if [[ $TXNODE -eq 0 && $NODES -eq 0 ]]; then
-          GEO=${GEO}$ID","
-          let ID=$ID+1
-        fi
-        if [ $TXNODE -ne 0 ]; then
-          GEO=${GEO}","
-        fi
-        GEO=${GEO}$ID
-        let TXNODE=$TXNODE+1
-        let ID=$ID+1
-      done
-      GEO=${GEO}")"
-      let NODES=$NODES+1
-    done
-    #export LSB_PJL_TASK_GEOMETRY="{"${GEO}"}"
     echo "GREASY NWORKERS AND GREASY TASKS PER NODE DETECTED:"
     echo "TOTAL_NODES=$GREASY_NNODES"
     echo "GREASY_NWORKERS=$GREASY_NWORKERS"
     echo "GREASY_TASKS_PER_NODE=$GREASY_TASKS_PER_NODE"
-    #export LSF_PJL_TYPE=intelmpi
     n=0;
     node="";
 		if [ -f $TMPDIR/hostfile.txt ]; then
