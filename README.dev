@@ -1,0 +1,10 @@
+To change the GREASY version once you do a TAG, you have to edit:
+
+configure.ac
+
+and change these lines:
+
+AC_INIT([greasy],[2.1.2.1],[support@bsc.es])
+AM_INIT_AUTOMAKE(greasy,2.1.2.1)
+
+and run 'autoconf' again
