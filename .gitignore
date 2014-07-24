@@ -1,0 +1,15 @@
+*.o
+greasybin
+Makefile
+stamp-h1
+bin/greasy
+config.h
+config.log
+config.status
+etc/greasy.conf
+example/bsc_greasy.lsf.job
+example/bsc_greasy.slurm.job
+.settings
+.cproject
+.project
+src/.deps
