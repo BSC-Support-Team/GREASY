@@ -57,12 +57,17 @@ AbstractEngine* AbstractEngineFactory::getAbstractEngineInstance(const string& f
 AbstractEngine::AbstractEngine ( string filename ) {
   
   taskFile = filename;
+  string jobid="";
+  jobid=getenv ("LSB_JOBID");
+
+  if(!jobid.empty()) jobid="-" + jobid;
+
   //Check for a relative path
   if ((GreasyRegex::match(filename,"^[:blank:]*/(.*)$")==""))
     taskFile = getWorkingDir() + filename;
   
   vector<string>path = split(filename,'/');
-  restartFile = getWorkingDir() + path.back() + ".rst";
+  restartFile = getWorkingDir() + path.back() + jobid + ".rst";
   
   log = GreasyLog::getInstance();
   config = GreasyConfig::getInstance();
@@ -328,7 +333,7 @@ void AbstractEngine::writeRestartFile() {
   
   rstfile << "# " << endl;
   rstfile << "# Greasy restart file generated at "<< GreasyTimer::now() << endl;
-  rstfile << "# Original task file: " << getWorkingDir() << "/" << taskFile << endl;
+  rstfile << "# Original task file: " << taskFile << endl;
   rstfile << "# Log file: " << logFile  << endl;
   rstfile << "# " << endl;
   rstfile << endl;
