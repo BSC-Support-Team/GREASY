@@ -58,7 +58,7 @@ AbstractEngine::AbstractEngine ( string filename ) {
   
   taskFile = filename;
   string jobid="";
-  jobid=getenv ("LSB_JOBID");
+  jobid=getenv(JOBID);
 
   if(!jobid.empty()) jobid="-" + jobid;
 
