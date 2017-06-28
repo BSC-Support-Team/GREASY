@@ -64,7 +64,7 @@
 /* Define to 1 if `vfork' works. */
 #undef HAVE_WORKING_VFORK
 
-/* LSF enabled */
+/* LSF not enabled */
 #undef LSF
 
 /* MPI Engine enabled */
@@ -90,6 +90,9 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* PBS enabled */
+#undef PBS
 
 /* SLURM enabled */
 #undef SLURM

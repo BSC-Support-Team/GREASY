@@ -1,8 +1,8 @@
 #!/bin/bash
-# @ job_name = greasy
-# @ initialdir = ./
-# @ output = greasy-%j.out
-# @ error  = greasy-%j.err
+#SBATCH --job-name=greasy
+#SBATCH --workdir=.
+#SBATCH --output=greasy-%j.out
+#SBATCH --error=greasy-%j.err
 
 ##################################################
 # Fill here with a number of cpus according to   #
@@ -11,13 +11,13 @@
 # master if using the mpi engine.                #
 ##################################################
 
-# @ total_tasks = 4
+#SBATCH --ntasks=4
 
 ##################################################
 # and set an appropiate wall_clock_limit         #
 ##################################################
 
-# @ wall_clock_limit = 00:05:00
+#SBATCH --time=00:05:00
 
 ##################################################
 # Here goes the path to the file where you have  #

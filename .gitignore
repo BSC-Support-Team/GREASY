@@ -9,7 +9,9 @@ config.status
 etc/greasy.conf
 example/bsc_greasy.lsf.job
 example/bsc_greasy.slurm.job
+example/bsC_greasy.pbs.job
 .settings
 .cproject
 .project
 src/.deps
+*~ 
