@@ -2,15 +2,15 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
-AC_INIT([greasy],[2.1.2.1],[support@bsc.es])
-AM_INIT_AUTOMAKE(greasy,2.1.2.1)
+AC_INIT([greasy],[2.2],[support@bsc.es])
 AC_CONFIG_SRCDIR([src/greasylog.h])
+AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
 
 AC_SUBST(greasy_engine,[basic])
 
 # Checks for programs.
-AC_PROG_CC
+AC_PROG_CC([gcc cc icc])
 
 AC_CONFIG_MACRO_DIR([m4])
 # LT_INIT([dlopen])
@@ -19,7 +19,7 @@ AC_CONFIG_MACRO_DIR([m4])
 # Checks for SLURM
 
 AC_ARG_ENABLE(slurm,
-	[ --enable-slurm		enable SLURM (default=yes)],
+	[  --enable-slurm		enable SLURM (default=yes)],
 	[slurm=${enableval}],
 	[slurm=yes])
 
@@ -38,9 +38,9 @@ fi
 # Checks for LSF
 
 AC_ARG_ENABLE(lsf,
-							  [ --enable-lsf    enable LSF (default=yes)],
-								[lsf=${enableval}],
-								[lsf=yes])
+	[  --enable-lsf 			enable LSF (default=yes)],
+	[lsf=${enableval}],
+	[lsf=yes])
 
 AM_CONDITIONAL(LSF_LAUNCHER, test x$lsf = xyes)
 
@@ -49,15 +49,38 @@ if test x$lsf = xyes; then
 	AM_CONDITIONAL(LSF, test x$LSF_present = xyes)
 	if test x$LSF_present = xyes; then
  		AC_DEFINE(LSF,1, LSF enabled)
-	#else
-  #	AC_DEFINE(LSF,0, LSF not found)
+	else
+  		AC_DEFINE(LSF,0, LSF not found)
 	fi
+else
+	AM_CONDITIONAL(LSF, false)
+	AC_DEFINE(LSF, 0, LSF not enabled)
+fi
+
+
+# Checks for PBS
+
+AC_ARG_ENABLE(pbs,
+	[  --enable-pbs 			enable PBS (default=yes)],
+	[pbs=${enableval}],	
+	[pbs=yes])
+
+AM_CONDITIONAL(PBS_LAUNCHER, test x$pbs = xyes)
+
+if test x$pbs = xyes; then
+                AC_CHECK_PROG(PBS_present, qsub, [yes], [no])
+               AM_CONDITIONAL(PBS, test x$PBS_present = xyes)
+                if test x$PBS_present = xyes; then
+                AC_DEFINE(PBS,1, PBS enabled)
+#			else
+#				AC_DEFINE(SLURM,0, SLURM not found)
+                fi
 fi
 
 # Checks for MPI-ENGINE
 
 AC_ARG_ENABLE(mpi-engine,
-  [  --enable-mpi-engine			enable MPI engine (default=no)],
+  [  --enable-mpi-engine		enable MPI engine (default=no)],
   [mpi_engine=${enableval}],
   [mpi_engine=no])
 
@@ -151,7 +174,7 @@ fi
 # Checks for THREAD-ENGINE
 
 AC_ARG_ENABLE(thread-engine,
-  [  --enable-thread-engine		enable THREAD engine. This option will compile a local distribution of TBB by default. If --with-tbb is set it will used the specified installation of TBB.],
+  [  --enable-thread-engine	enable THREAD engine. This option will compile a local distribution of TBB by default. If --with-tbb is set it will used the specified installation of TBB.],
   [thread_engine=${enableval}],
   [thread_engine=no])
 
@@ -196,5 +219,5 @@ AC_SUBST(greasy_bindir,[$prefix/bin])
 AC_SUBST(greasy_etcdir,[$prefix/etc])
 AC_SUBST(greasy_libdir,[$prefix/lib])
 
-AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile etc/greasy.conf doc/Makefile example/Makefile example/bsc_greasy.slurm.job example/bsc_greasy.lsf.job bin/Makefile bin/greasy])
+AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile etc/greasy.conf doc/Makefile example/Makefile example/bsc_greasy.slurm.job example/bsc_greasy.lsf.job example/bsc_greasy.pbs.job bin/Makefile bin/greasy])
 AC_OUTPUT

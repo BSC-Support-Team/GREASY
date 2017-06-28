@@ -11,10 +11,17 @@ endif
 if LSF
 AM_CPPFLAGS += -DLSF
 
-else 
+else
+
+if PBS
+AM_CPPFLAGS += -DPBS
+
+else
 
 if SLURM
 AM_CPPFLAGS += -DSLURM
+endif
+
 endif
 
 endif
