@@ -248,7 +248,17 @@ void MPIEngine::executionSummary() {
   job_id=getenv(JOBID);
   
 #elif defined(PBS)
-        
+        char command_nodes[250];
+        char buf[10];
+        sprintf(command_nodes,"cat $PBS_NODEFILE | uniq | wc -l | tr \"\n\" \" \"");
+        FILE *fp = popen(command_nodes,"r");
+ 	n_nodes=(char*)malloc(10*sizeof(char));
+	while (fgets(buf, 10, fp)) {
+	    strcpy(n_nodes,buf);
+	}
+	if(n_nodes) log->record(GreasyLog::info, "Run on " + toString(n_nodes)+ "nodes");
+	job_id=getenv(JOBID);
+
 
 #elif defined(SLURM)
 	n_nodes=getenv("SLURM_NNODES");
