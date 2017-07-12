@@ -235,7 +235,7 @@ void MPIEngine::executionSummary() {
 	pwd=get_current_dir_name();
 	log->record(GreasyLog::info, "Current Working Dir " + toString(pwd));
 
-#ifdef LSF
+#ifdef defined(LSF)
 	char command_nodes[250];
 	char buf[10];
 	sprintf(command_nodes,"cat $LSB_DJOB_HOSTFILE | uniq | wc -l | tr \"\n\" \" \"");
@@ -264,7 +264,7 @@ void MPIEngine::executionSummary() {
 	n_nodes=getenv("SLURM_NNODES");
 	strcat(n_nodes," ");
 	if(n_nodes) log->record(GreasyLog::info, "Run on " + toString(n_nodes)+ "nodes");
-  job_id=getenv(JOBID);	
+  	job_id=getenv(JOBID);	
 #endif
 
   //log->record(GreasyLog::info, toString(command_nodes));
