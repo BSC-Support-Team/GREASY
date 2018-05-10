@@ -61,15 +61,10 @@ void MPIEngine::init() {
   
   log->record(GreasyLog::devel, "MPIEngine::init", "Entering...");
   
-  MPI::Init(argc, argv);
-  workerId = MPI::COMM_WORLD.Get_rank();
-  nworkers = MPI::COMM_WORLD.Get_size();
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &workerId);
+  MPI_Comm_size(MPI_COMM_WORLD, &nworkers);
 
- // MPI::Datatype type = MPI::CHAR.Create_contiguous(size);
- // type.Commit();
- // MPI_Get_processor_name(workerHost,&size);
-
-  
   // We don't count the master
   nworkers--;
   
@@ -107,7 +102,7 @@ void MPIEngine::finalize() {
     AbstractSchedulerEngine::finalize();
   }
   
-  MPI::Finalize();
+  MPI_Finalize();
   
 }
 
@@ -165,8 +160,8 @@ void MPIEngine::allocate(GreasyTask* task) {
   // Send the command size and the actual command
   cmdSize = task->getCommand().size()+1;
   cmd = task->getCommand().c_str();
-  MPI::COMM_WORLD.Send( &cmdSize, 1, MPI::INT, worker, 0);
-  MPI::COMM_WORLD.Send((void*)cmd, cmdSize, MPI::CHAR, worker , 0);
+  MPI_Send(&cmdSize, 1, MPI_INT, worker, 0, MPI_COMM_WORLD);
+  MPI_Send((void*) cmd, cmdSize, MPI_CHAR, worker, 0, MPI_COMM_WORLD);
   
   log->record(GreasyLog::devel, "MPIEngine::allocate", "Exiting...");
   
@@ -177,16 +172,16 @@ void MPIEngine::waitForAnyWorker() {
   int retcode;
   int worker;
   GreasyTask* task = NULL;
-  MPI::Status status;
+  MPI_Status status;
   reportStruct report; 
   
   log->record(GreasyLog::devel, "MPIEngine::waitForAnyWorker", "Entering...");
   
   log->record(GreasyLog::debug,  "Waiting for any task to complete...");
-  MPI::COMM_WORLD.Recv ( &report, sizeof(reportStruct), MPI::CHAR, MPI::ANY_SOURCE, MPI::ANY_TAG, status );
+  MPI_Recv(&report, sizeof(reportStruct), MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
   
   retcode = report.retcode;
-  worker = status.Get_source ();
+  worker = status.MPI_SOURCE;
   task = taskMap[taskAssignation[worker]];
     
   // Push worker to the free workers queue again
@@ -212,7 +207,7 @@ void MPIEngine::fireWorkers() {
   
   log->record(GreasyLog::debug,  "Sending fire comand to all workers...");
   for(int worker=1;worker<=nworkers;worker++) {
-    MPI::COMM_WORLD.Send( &fired, 1, MPI::INT, worker, 0);
+    MPI_Send(&fired, 1, MPI_INT, worker, 0, MPI_COMM_WORLD);	
   } 
   
   log->record(GreasyLog::devel, "MPIEngine::fireWorkers", "Exiting...");
@@ -235,7 +230,7 @@ void MPIEngine::executionSummary() {
 	pwd=get_current_dir_name();
 	log->record(GreasyLog::info, "Current Working Dir " + toString(pwd));
 
-#ifdef defined(LSF)
+#if defined(LSF)
 	char command_nodes[250];
 	char buf[10];
 	sprintf(command_nodes,"cat $LSB_DJOB_HOSTFILE | uniq | wc -l | tr \"\n\" \" \"");
@@ -282,7 +277,7 @@ void MPIEngine::runWorker() {
   
   int cmdSize = 0;
   char *cmd = NULL;
-  MPI::Status status;
+  MPI_Status status;
   int retcode = -1;
   int err;
   reportStruct report;
@@ -300,12 +295,11 @@ void MPIEngine::runWorker() {
     report.elapsed = 0;
     strcpy(report.hostname,hostname);
     // Receive command size, including '\0'
-    try {
-      MPI::COMM_WORLD.Recv ( &cmdSize, 1, MPI::INT, 0, 0, status );
-    } catch (MPI::Exception e) {
-      log->record(GreasyLog::error, "WORKER("+toString(workerId)+")", "Error receiving command size: "+toString(e.Get_error_string()));
+    err = MPI_Recv(&cmdSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+    if (err != MPI_SUCCESS ) {
+      log->record(GreasyLog::error, "WORKER("+toString(workerId)+")", "Error receiving command size: "+toString(err));
       report.workerStatus = 0;
-      MPI::COMM_WORLD.Send( &report, sizeof(report), MPI::CHAR, 0, 0);
+      MPI_Send(&report, sizeof(report), MPI_CHAR, 0, 0, MPI_COMM_WORLD);
       continue;
     }
     
@@ -320,17 +314,16 @@ void MPIEngine::runWorker() {
     if(!cmd) {
       log->record(GreasyLog::error, "WORKER("+toString(workerId)+")", "Could not allocate memory");
       report.workerStatus = 0;
-      MPI::COMM_WORLD.Send( &report, sizeof(report), MPI::CHAR, 0, 0);
+      MPI_Send(&report, sizeof(report), MPI_CHAR, 0, 0, MPI_COMM_WORLD);
       break;
     }
     
     // Receive the command
-    try {
-      MPI::COMM_WORLD.Recv ( cmd, cmdSize, MPI::CHAR, 0, 0, status );
-    } catch (MPI::Exception e) {
-      log->record(GreasyLog::error, "WORKER("+toString(workerId)+")", "Error receiving command: "+toString(e.Get_error_string()));
+    err = MPI_Recv(cmd, cmdSize, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
+    if (err != MPI_SUCCESS) {
+      log->record(GreasyLog::error, "WORKER("+toString(workerId)+")", "Error receiving command: "+toString(err));
       report.workerStatus = 0;
-      MPI::COMM_WORLD.Send( &report, sizeof(report), MPI::CHAR, 0, 0);
+      MPI_Send(&report, sizeof(report), MPI_CHAR, 0, 0, MPI_COMM_WORLD);
       continue;
     }
 
@@ -353,7 +346,7 @@ void MPIEngine::runWorker() {
     
     // Report to the master the end of the task
     log->record(GreasyLog::debug, toString(workerId), "Task finished with retcode (" + toString(retcode) + "). Elapsed: " + GreasyTimer::secsToTime(report.elapsed));
-    MPI::COMM_WORLD.Send( &report, sizeof(report), MPI::CHAR, 0, 0);
+    MPI_Send(&report, sizeof(report), MPI_CHAR, 0, 0, MPI_COMM_WORLD);
     
     if (cmd) free(cmd);
   }
