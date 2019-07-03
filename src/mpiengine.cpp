@@ -55,7 +55,7 @@ void MPIEngine::init() {
   
   //Dummy arguments for MPI::Init
   int argc=0;
-  char **argv;
+  char **argv=NULL;
   int size = MPI_MAX_PROCESSOR_NAME;
   char workerHost[MPI_MAX_PROCESSOR_NAME];
   
