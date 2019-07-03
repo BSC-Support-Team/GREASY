@@ -26,6 +26,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#ifndef HOST_NAME_MAX
+#include <limits>
+#define HOST_NAME_MAX sysconf (_SC_HOST_NAME_MAX)
+#endif
+
 BasicEngine::BasicEngine ( const string& filename) : AbstractSchedulerEngine(filename){
   
   engineType="basic";
