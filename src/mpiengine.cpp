@@ -256,7 +256,7 @@ void MPIEngine::executionSummary() {
 
 
 #elif defined(SLURM)
-	n_nodes=getenv("SLURM_NNODES");
+	n_nodes=getenv("SLURM_JOB_NUM_NODES");
 	strcat(n_nodes," ");
 	if(n_nodes) log->record(GreasyLog::info, "Run on " + toString(n_nodes)+ "nodes");
   	job_id=getenv(JOBID);	
