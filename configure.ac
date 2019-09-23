@@ -137,7 +137,7 @@ AC_CHECK_FUNCS([getcwd gethostname gettimeofday regcomp])
 AC_CHECK_PROGS(basic_spawn, [srun ssh],[no])
 if test x$basic_spawn != xno; then
   if test x$basic_spawn = xsrun; then 
-    AC_SUBST(remotemethod,[srun])
+    AC_SUBST(remotemethod,["srun --cpu-bind=none"])
   else
     if test x$basic_spawn = xssh; then 
       AC_SUBST(remotemethod,[ssh])
