@@ -1,1 +1,13 @@
+In order to install from scratch execute first:
+
+aclocal
+autoconf
+automake
+
+Then
+make clean
+./configure
+make
+make install
+
 user's guide in doc/greasy_userguide.pdf

@@ -5,7 +5,7 @@ greasybin_SOURCES = abstractengine.cpp abstractengine.h abstractschedulerengine.
 
 if MPI_ENGINE
 greasybin_SOURCES += mpiengine.cpp mpiengine.h
-AM_CPPFLAGS += -DMPI_ENGINE -ansi
+AM_CPPFLAGS += -DMPI_ENGINE
 endif
 
 if LSF
@@ -75,5 +75,4 @@ AM_LDFLAGS  = -Wl,-rpath,@tbb_libs@ -L@tbb_libs@ -ltbb
 endif 
 
 endif
-
 

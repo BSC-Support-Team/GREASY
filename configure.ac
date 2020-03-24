@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
-AC_INIT([greasy],[2.2],[support@bsc.es])
+AC_INIT([greasy],[2.2.2],[support@bsc.es])
 AC_CONFIG_SRCDIR([src/greasylog.h])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
