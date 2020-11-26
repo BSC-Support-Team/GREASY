@@ -40,19 +40,20 @@ string GreasyRegex::match(string str, string pattern) {
 
   regex_t regexp;
   regmatch_t match[2];
-  int error,dstbuflen;
-  string result;
+  string result="";
   const char * ptr = str.c_str();
   
-  if (regcomp(&regexp,pattern.c_str(),REG_ICASE|REG_EXTENDED)!=0) return "";
-  
-  error=regexec(&regexp,ptr,2,match,0);
-  if (error != 0) return "";
-  
-  dstbuflen=( match[1].rm_eo - match[1].rm_so <= 0 ? 0 : match[1].rm_eo - match[1].rm_so);
-  if (match[1].rm_so < 0) return "";
-  else result = string(ptr + match[1].rm_so,dstbuflen);
-  
+  if (regcomp(&regexp,pattern.c_str(),REG_ICASE|REG_EXTENDED)==0)
+  {
+    if(regexec(&regexp,ptr,2,match,0)==0)
+    {
+      if (match[1].rm_so >= 0)
+      {
+        result = string(ptr + match[1].rm_so, match[1].rm_eo - match[1].rm_so);
+      }
+    }
+  }
+  regfree(&regexp);
   return result;
 
 }
