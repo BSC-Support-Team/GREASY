@@ -64,5 +64,6 @@ public:
 
 protected:
 	regex_t regexp; /**< Regular expression handler */
+	int regcompReturnValue; /**< Return value from regcomp */
 	
 };
