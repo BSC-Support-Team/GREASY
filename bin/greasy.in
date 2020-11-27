@@ -21,9 +21,9 @@ fi
 if [[ "$GREASY_ENGINE" = "mpi" || "$GREASY_ENGINE" = "MPI" ]]; then
   MPIRUN=@machine_mpirun@
 	#this avoid 100% cpu usage for the master
-	export I_MPI_WAIT_MODE=1
+#	export I_MPI_WAIT_MODE=1
 	export I_MPI_PIN="disable"
-	export OMPI_MCA_mpi_yield_when_idle=1
+#	export OMPI_MCA_mpi_yield_when_idle=1
 	export OMPI_MCA_mpi_warn_on_fork=0
 else
   MPIRUN=""
