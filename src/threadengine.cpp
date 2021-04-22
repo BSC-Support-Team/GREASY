@@ -1,17 +1,17 @@
-/* 
+/*
  * This file is part of GREASY software package
  * Copyright (C) by the BSC-Support Team, see www.bsc.es
- * 
+ *
  * GREASY is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
  * GREASY is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with GREASY. If not, see <http://www.gnu.org/licenses/>.
  *
@@ -22,7 +22,7 @@
 
 
 ThreadEngine::ThreadEngine ( const string& filename) : AbstractEngine(filename){
-  
+
   engineType="thread";
 
 }
@@ -124,14 +124,16 @@ void GreasyTBBTaskEngine::operator()( argument_type item, tbb::parallel_do_feede
 {
     GreasyLog::getInstance()->record(GreasyLog::devel, "GreasyTBBTaskEngine::()", "Entering...");
 
-    GreasyLog::getInstance()->record(GreasyLog::debug, "GreasyTBBTaskEngine::()", "Executing command: " + item->getCommand());
+    string command = "cd " + item->getWorkDir() + " && " + item->getCommand() + item->getCommand();
+
+    GreasyLog::getInstance()->record(GreasyLog::debug, "GreasyTBBTaskEngine::()", "Executing command: " + command);
 
     item->setTaskState(GreasyTask::running);
 
     GreasyTimer timer;
     timer.reset();
     timer.start();
-    int retcode = system(item->getCommand().c_str());
+    int retcode = system(command.c_str());
     timer.stop();
 
     item->setReturnCode(retcode);
@@ -245,5 +247,3 @@ void GreasyTBBTaskEngine::updateDependencies(argument_type child, tbb::parallel_
     log->record(GreasyLog::devel, "GreasyTBBTaskEngine::updateDependencies", "Exiting...");
 
 }
-
-

@@ -152,14 +152,19 @@ void MPIEngine::allocate(GreasyTask* task) {
 
   log->record(GreasyLog::info,  "Allocating task " + toString(task->getTaskNum()) + " located in line "+ toString(task->getTaskId()) + " to Worker " + toString(worker));
 
-  log->record(GreasyLog::debug, "MPIEngine::allocate", "Sending task " + toString(task->getTaskNum()) + " located in line "+ toString(task->getTaskId()) + " to worker " + toString(worker));
   taskAssignation[worker] = task->getTaskId();
   task->setTaskState(GreasyTask::running);
+
+  if(task->hasWorkDir()) {
+    string command = "cd " + task->getWorkDir() + " && " + task->getCommand();
+    task->setCommand(command);
+  }
+  log->record(GreasyLog::debug,  "Task " + toString(task->getTaskNum()) + " located in line "+ toString(task->getTaskId()) + " to Worker " + toString(worker) + " wants to execute " + task->getCommand());
 
   // Send the command size and the actual command
   cmdSize = task->getCommand().size()+1;
   MPI_Send(&cmdSize, 1, MPI_INT, worker, 0, MPI_COMM_WORLD);
-  MPI_Send((void*)task->getCommand().c_str(), cmdSize, MPI_BYTE, worker, 0, MPI_COMM_WORLD);
+  MPI_Send((void*) task->getCommand().c_str(), cmdSize, MPI_BYTE, worker, 0, MPI_COMM_WORLD);
 
   log->record(GreasyLog::devel, "MPIEngine::allocate", "Exiting...");
 
