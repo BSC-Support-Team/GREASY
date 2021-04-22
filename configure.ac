@@ -2,10 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
-AC_INIT([greasy],[2.2.2],[support@bsc.es])
+AC_INIT([greasy],[2.2.3],[support@bsc.es])
 AC_CONFIG_SRCDIR([src/greasylog.h])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
+AC_LANG([C++])
 
 AC_SUBST(greasy_engine,[basic])
 
@@ -62,7 +63,7 @@ fi
 
 AC_ARG_ENABLE(pbs,
 	[  --enable-pbs 			enable PBS (default=yes)],
-	[pbs=${enableval}],	
+	[pbs=${enableval}],
 	[pbs=yes])
 
 AM_CONDITIONAL(PBS_LAUNCHER, test x$pbs = xyes)
@@ -88,21 +89,18 @@ AM_CONDITIONAL(MPI_ENGINE, test x$mpi_engine = xyes)
 
 if test x$mpi_engine = xyes; then
   AC_DEFINE(MPI_ENGINE, 1, MPI Engine enabled)
-  AC_CHECK_PROG(mpicxx_present, mpicxx, [yes], [no])
-  if test x$mpicxx_present = xno; then
-    AC_CHECK_PROG(mpicxx_present, mpiCC, [yes], [no])
-    if test x$mpicxx_present = xno; then
-      AC_MSG_ERROR([Fatal Error: no mpi compiler found])
-      exit;
-    else
-      CXX=mpiCC
-    fi
-  else
-    CXX=mpicxx
-  fi
+  AC_CHECK_PROGS(MPICXX, mpicxx mpic++ CC, $MPICXX)
+  CXX=$MPICXX
+  AC_MSG_CHECKING([whether the MPI command works]) # be paranoid
+  AC_TRY_LINK(
+    [#include <mpi.h>],[int argc; char **argv; MPI_Init(&argc,&argv);],
+    AC_MSG_RESULT([yes]),
+    AC_MSG_ERROR([Cannot compile and link MPI code with $CXX])
+    exit;
+  )
   AC_PROG_CXX
   AC_SUBST(greasy_engine,[mpi])
-  
+
   AC_CHECK_PROGS(machine_mpirun,[mnrun srun mpirun mpiexec],[no-mpirun-found])
   if test x$machine_mpirun = xno-mpirun-found; then
     AC_MSG_ERROR([Fatal Error: no MPI executer found])
@@ -136,10 +134,10 @@ AC_CHECK_FUNCS([getcwd gethostname gettimeofday regcomp])
 # Checks for Basic engine
 AC_CHECK_PROGS(basic_spawn, [srun ssh],[no])
 if test x$basic_spawn != xno; then
-  if test x$basic_spawn = xsrun; then 
+  if test x$basic_spawn = xsrun; then
     AC_SUBST(remotemethod,["srun --cpu-bind=none"])
   else
-    if test x$basic_spawn = xssh; then 
+    if test x$basic_spawn = xssh; then
       AC_SUBST(remotemethod,[ssh])
     else
       AC_SUBST(remotemethod,[none])
@@ -157,9 +155,9 @@ fi
 
 # WARNING: implement slurm engine before enabling in Makefile.am
 # AM_CONDITIONAL(SLURM_ENGINE, test x$slurm_engine = xyes)
-# 
+#
 # if test x$slurm_engine = xyes; then
-# 
+#
 #   AC_CHECK_PROG(srun_present,[srun],[yes],[no])
 #   if test x$srun_present = xno; then
 #     AC_MSG_ERROR([Fatal Error: srun command not found])
@@ -183,8 +181,8 @@ AM_CONDITIONAL(THREAD_ENGINE, test x$thread_engine = xyes)
 
 # check for local TBB
 AC_ARG_WITH([tbb],
-   [AS_HELP_STRING([--with-tbb], [Path to the system TBB installation. Otherwise will use the TBB version distributed with GREASY])], 
-   [tbb=$withval], 
+   [AS_HELP_STRING([--with-tbb], [Path to the system TBB installation. Otherwise will use the TBB version distributed with GREASY])],
+   [tbb=$withval],
    [tbb=no])
 
 
@@ -193,7 +191,7 @@ if test x$thread_engine = xyes; then
 
   AC_DEFINE(THREAD_ENGINE, 1, Thread Engine enabled with TBB)
 
-   if test x$tbb != xno; then 
+   if test x$tbb != xno; then
 	# use system TBB
 	echo "Using system TBB in $tbb"
 	AC_SUBST(tbb_include,[$tbb/include])
@@ -210,10 +208,10 @@ if test x$thread_engine = xyes; then
 	cd - > /dev/null
    fi
 else
-   if test x$tbb != xno; then 
+   if test x$tbb != xno; then
 	echo "Skipping '--with-tbb' option ... if you want to use TBB you must '--enable-thread-engine'"
    fi
-fi 
+fi
 
 AC_SUBST(greasy_bindir,[$prefix/bin])
 AC_SUBST(greasy_etcdir,[$prefix/etc])
