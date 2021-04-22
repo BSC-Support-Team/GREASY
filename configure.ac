@@ -6,6 +6,7 @@ AC_INIT([greasy],[2.2.3],[support@bsc.es])
 AC_CONFIG_SRCDIR([src/greasylog.h])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
+AC_LANG([C++])
 
 AC_SUBST(greasy_engine,[basic])
 
@@ -89,7 +90,6 @@ AM_CONDITIONAL(MPI_ENGINE, test x$mpi_engine = xyes)
 if test x$mpi_engine = xyes; then
   AC_DEFINE(MPI_ENGINE, 1, MPI Engine enabled)
   AC_CHECK_PROGS(MPICXX, mpicxx mpic++ CC, $MPICXX)
-  CC=$MPICXX
   CXX=$MPICXX
   AC_MSG_CHECKING([whether the MPI command works]) # be paranoid
   AC_TRY_LINK(
