@@ -52,6 +52,6 @@ FILE=short-example.txt
 # Run greasy!                                    #
 ##################################################
 
-/home/prodenas/workspace/TMP/bin/greasy $FILE
+NONE/bin/greasy $FILE
 
 
