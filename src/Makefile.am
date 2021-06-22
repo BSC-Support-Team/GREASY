@@ -1,7 +1,9 @@
 AM_CPPFLAGS = -DSYSTEM_CFG=\"@sysconfdir@/greasy.conf\"
+AM_CXXFLAGS = -std=c++11
 EXTRA_DIST = 3rdparty/tbb40_20111130oss_src.tgz
 bin_PROGRAMS = greasybin
 greasybin_SOURCES = abstractengine.cpp abstractengine.h abstractschedulerengine.cpp abstractschedulerengine.h basicengine.cpp basicengine.h greasyconfig.cpp greasyconfig.h greasy.cpp greasylog.cpp greasylog.h greasyregex.cpp greasyregex.h greasytask.cpp greasytask.h greasytimer.cpp greasytimer.h greasyutils.h  
+
 
 if MPI_ENGINE
 greasybin_SOURCES += mpiengine.cpp mpiengine.h
