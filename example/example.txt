@@ -13,6 +13,8 @@
 [#1-3#]		/bin/sleep 13
 [#1, 3 - 5 #]	/bin/sleep 14
 [##] 		/usr/bin/hostname
+[@ /tmp @]	pwd
+[@ /home/user @][# -1#] pwd
 
 
 #########################
