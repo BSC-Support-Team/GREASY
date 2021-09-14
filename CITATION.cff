@@ -1,0 +1,39 @@
+# YAML 1.2
+---
+abstract: |
+    "GREASY is a tool designed to make easier the deployment of embarrassingly parallel simulations in
+    any environment. It is able to run in parallel a list of different tasks, schedule and run them
+    using the available resources. GREASY is a tool developed by HPC user support team at BSC."
+authors: 
+  -
+    affiliation: BSC
+    family-names: Abellan
+    given-names: Xavi
+  -
+    affiliation: BSC
+    family-names: Naranjo
+    given-names: Jorge
+  -
+    affiliation: BSC
+    family-names: Simarro
+    given-names: Christian
+  -
+    affiliation: BSC
+    family-names: Rodriguez
+    given-names: Jorge
+  -
+    affiliation: BSC
+    family-names: Rodenas
+    given-names: Pablo
+cff-version: "1.1.0"
+date-released: 2021-06-23
+keywords: 
+  - MPI
+  - parallel
+  - "embarrassingly parallel"
+license: "GPL-3.0+"
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/BSC-Support-Team/GREASY"
+title: GREASY
+version: "2.2.3"
+...
