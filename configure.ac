@@ -31,8 +31,6 @@ if test x$slurm = xyes; then
 				AM_CONDITIONAL(SLURM, test x$SLURM_present = xyes)
 				if test x$SLURM_present = xyes; then
 					AC_DEFINE(SLURM,1, SLURM enabled)
-	#			else
-	#				AC_DEFINE(SLURM,0, SLURM not found)
 				fi
 fi
 
@@ -50,8 +48,6 @@ if test x$lsf = xyes; then
 	AM_CONDITIONAL(LSF, test x$LSF_present = xyes)
 	if test x$LSF_present = xyes; then
  		AC_DEFINE(LSF,1, LSF enabled)
-	else
-  		AC_DEFINE(LSF,0, LSF not found)
 	fi
 else
 	AM_CONDITIONAL(LSF, false)
@@ -71,11 +67,9 @@ AM_CONDITIONAL(PBS_LAUNCHER, test x$pbs = xyes)
 if test x$pbs = xyes; then
                 AC_CHECK_PROG(PBS_present, qsub, [yes], [no])
                AM_CONDITIONAL(PBS, test x$PBS_present = xyes)
-                if test x$PBS_present = xyes; then
+          if test x$PBS_present = xyes; then
                 AC_DEFINE(PBS,1, PBS enabled)
-#			else
-#				AC_DEFINE(SLURM,0, SLURM not found)
-                fi
+
 fi
 
 # Checks for MPI-ENGINE

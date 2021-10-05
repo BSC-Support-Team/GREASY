@@ -1,5 +1,6 @@
 *.o
 greasybin
+configure
 Makefile
 stamp-h1
 bin/greasy
@@ -9,10 +10,14 @@ config.status
 etc/greasy.conf
 example/bsc_greasy.lsf.job
 example/bsc_greasy.slurm.job
-example/bsC_greasy.pbs.job
+example/bsc_greasy.pbs.job
 .settings
 .cproject
 .project
 src/.deps
 *~ 
 .*.swp
+autom4te.cache/*
+Makefile.in
+*/Makefile.in
+aclocal.m4
