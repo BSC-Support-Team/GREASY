@@ -69,7 +69,7 @@ if test x$pbs = xyes; then
                AM_CONDITIONAL(PBS, test x$PBS_present = xyes)
           if test x$PBS_present = xyes; then
                 AC_DEFINE(PBS,1, PBS enabled)
-
+          fi
 fi
 
 # Checks for MPI-ENGINE
