@@ -11,3 +11,6 @@ make
 make install
 
 user's guide in doc/greasy_userguide.pdf
+MultiMarkDown (https://fletcher.github.io/MultiMarkdown-6/) has been
+used for generating the user's guide. You have to install packages: 
+multimarkdown and latexmk.
