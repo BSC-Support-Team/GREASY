@@ -21,3 +21,14 @@ autom4te.cache/*
 Makefile.in
 */Makefile.in
 aclocal.m4
+install-sh
+missing
+doc/*.acn
+doc/*.acr
+doc/*.alg
+doc/*.dvi
+doc/*.glg
+doc/*.glo
+doc/*.gls
+doc/*.ist
+doc/*.tex
