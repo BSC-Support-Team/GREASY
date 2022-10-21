@@ -1,5 +1,7 @@
 docdir = $(prefix)/doc
 
+if COMPILEDOC
+
 GREASY_filename=greasy_userguide
 EXTRA_DIST = doc
 
@@ -26,3 +28,5 @@ clean:
 
 distclean: clean
 	@rm -rf ${GREASY_filename}.pdf ${GREASY_filename}.html 
+
+endif
