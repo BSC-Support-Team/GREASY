@@ -58,7 +58,7 @@ fi
 # Checks for PBS
 
 AC_ARG_ENABLE(pbs,
-	[  --enable-pbs 			enable PBS (default=yes)],
+	[  --enable-pbs				enable PBS (default=yes)],
 	[pbs=${enableval}],
 	[pbs=yes])
 
@@ -71,6 +71,15 @@ if test x$pbs = xyes; then
                 AC_DEFINE(PBS,1, PBS enabled)
           fi
 fi
+
+# Option to compile documentation
+AC_ARG_ENABLE(doc,
+    [  --enable-doc          enable DOC (default=yes)],
+    [doc=${enableval}],
+    [doc=yes])
+
+AM_CONDITIONAL(COMPILEDOC, test x$doc = xyes)
+
 
 # Checks for MPI-ENGINE
 
@@ -211,5 +220,6 @@ AC_SUBST(greasy_bindir,[$prefix/bin])
 AC_SUBST(greasy_etcdir,[$prefix/etc])
 AC_SUBST(greasy_libdir,[$prefix/lib])
 
-AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile etc/greasy.conf doc/Makefile example/Makefile example/bsc_greasy.slurm.job example/bsc_greasy.lsf.job example/bsc_greasy.pbs.job bin/Makefile bin/greasy])
+AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile doc/Makefile etc/greasy.conf example/Makefile example/bsc_greasy.slurm.job example/bsc_greasy.lsf.job example/bsc_greasy.pbs.job bin/Makefile bin/greasy])
 AC_OUTPUT
+
